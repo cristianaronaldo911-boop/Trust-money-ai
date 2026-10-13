@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trust Money AI</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #101426;
+      color: white;
+    }
+    header {
+      padding: 22px 16px;
+      background: #191f38;
+      text-align: center;
+      border-bottom: 1px solid #343b59;
+    }
+    header h1 { color: #a99aff; margin: 0 0 8px; }
+    main { max-width: 650px; margin: auto; padding: 22px 16px; }
+    .card {
+      background: #1b223b;
+      border: 1px solid #343d5d;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    label { display: block; margin: 14px 0 8px; }
+    textarea, select, input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 9px;
+      border: 1px solid #505a7c;
+      background: #101426;
+      color: white;
+      font-size: 16px;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 14px;
+      margin-top: 14px;
+      background: #8170ff;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      width: 100%;
+    }
+    .note { color: #c1c8df; line-height: 1.6; }
+    #preview { max-width: 100%; margin-top: 12px; border-radius: 10px; }
+    footer { text-align: center; color: #aeb6d0; padding: 24px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Trust Money AI</h1>
+    <p>Your ideas. Your stories. Your creativity.</p>
+  </header>
+  <main>
+    <section class="card">
+      <h2>Create an AI video</h2>
+      <p class="note">Make village stories, action adventures, comedy, music videos and more.</p>
+      <label for="kind">Choose video type</label>
+      <select id="kind">
+        <option>Village story</option>
+        <option>Comedy</option>
+        <option>Action adventure</option>
+        <option>Music video</option>
+        <option>Motivational story</option>
+        <option>Other AI video</option>
+      </select>
+      <label for="prompt">Describe your video</label>
+      <textarea id="prompt" placeholder="Example: A poor village boy works hard and becomes successful..."></textarea>
+      <label for="photo">Upload an image (optional)</label>
+      <input id="photo" type="file" accept="image/*">
+      <img id="preview" alt="Your image preview" hidden>
+      <button onclick="makePrompt()">Prepare my video idea</button>
+      <p id="result" class="note" aria-live="polite"></p>
+    </section>
+    <section class="card">
+      <h2>How it works</h2>
+      <p class="note">1. Choose your video type.</p>
+      <p class="note">2. Describe your idea or select an image.</p>
+      <p class="note">3. Connect a real AI video service to generate and download videos.</p>
+      <p class="note">Video generation will become available after the AI service is connected.</p>
+    </section>
+  </main>
+  <footer>© 2026 Trust Money AI</footer>
+  <script>
+    function makePrompt() {
+      const idea = document.getElementById('prompt').value.trim();
+      const kind = document.getElementById('kind').value;
+      document.getElementById('result').textContent = idea
+        ? 'Your ' + kind + ' idea is ready: ' + idea + ' — Connect an AI video service to generate the actual video.'
+        : 'Please describe your video idea first.';
+    }
+    document.getElementById('photo').addEventListener('change', function() {
+      const file = this.files[0];
+      const preview = document.getElementById('preview');
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.hidden = false;
+      } else {
+        preview.hidden = true;
+      }
+    });
+  </script>
+</body>
+</html>
