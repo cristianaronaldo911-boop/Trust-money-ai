@@ -50,8 +50,13 @@
       font-size: 16px;
       width: 100%;
     }
+    button:disabled { opacity: 0.6; }
     .note { color: #c1c8df; line-height: 1.6; }
-    #preview { max-width: 100%; margin-top: 12px; border-radius: 10px; }
+    #preview {
+      max-width: 100%;
+      margin-top: 12px;
+      border-radius: 10px;
+    }
     footer { text-align: center; color: #aeb6d0; padding: 24px; }
   </style>
 </head>
@@ -60,10 +65,12 @@
     <h1>Trust Money AI</h1>
     <p>Your ideas. Your stories. Your creativity.</p>
   </header>
+
   <main>
     <section class="card">
       <h2>Create an AI video</h2>
       <p class="note">Make village stories, action adventures, comedy, music videos and more.</p>
+
       <label for="kind">Choose video type</label>
       <select id="kind">
         <option>Village story</option>
@@ -73,38 +80,74 @@
         <option>Motivational story</option>
         <option>Other AI video</option>
       </select>
+
       <label for="prompt">Describe your video</label>
-      <textarea id="prompt" placeholder="Example: A poor village boy works hard and becomes successful..."></textarea>
+      <textarea id="prompt" placeholder="Example: A village boy works hard and buys his dream car..."></textarea>
+
       <label for="photo">Upload an image (optional)</label>
       <input id="photo" type="file" accept="image/*">
       <img id="preview" alt="Your image preview" hidden>
-      <button onclick="makePrompt()">Prepare my video idea</button>
+
+      <button id="generate" type="button" onclick="makePrompt()">Generate my video</button>
       <p id="result" class="note" aria-live="polite"></p>
     </section>
+
     <section class="card">
       <h2>How it works</h2>
       <p class="note">1. Choose your video type.</p>
       <p class="note">2. Describe your idea or select an image.</p>
-      <p class="note">3. Connect a real AI video service to generate and download videos.</p>
-      <p class="note">Video generation will become available after the AI service is connected.</p>
+      <p class="note">3. Send your idea to the AI service.</p>
+      <p class="note">Real video generation requires a working video service connection.</p>
     </section>
   </main>
+
   <footer>© 2026 Trust Money AI</footer>
+
   <script>
-    function makePrompt() {
+    async function makePrompt() {
       const idea = document.getElementById('prompt').value.trim();
       const kind = document.getElementById('kind').value;
-      document.getElementById('result').textContent = idea
-        ? 'Your ' + kind + ' idea is ready: ' + idea + ' — Connect an AI video service to generate the actual video.'
-        : 'Please describe your video idea first.';
+      const result = document.getElementById('result');
+      const button = document.getElementById('generate');
+
+      if (!idea) {
+        result.textContent = 'Please describe your video idea first.';
+        return;
+      }
+
+      button.disabled = true;
+      result.textContent = 'Sending your idea to the AI service...';
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: kind + ': ' + idea })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'The AI service returned an error.');
+        }
+
+        result.textContent = 'The service responded: ' + JSON.stringify(data);
+      } catch (error) {
+        result.textContent = 'The request failed: ' + error.message;
+      } finally {
+        button.disabled = false;
+      }
     }
+
     document.getElementById('photo').addEventListener('change', function() {
       const file = this.files[0];
       const preview = document.getElementById('preview');
+
       if (file) {
         preview.src = URL.createObjectURL(file);
         preview.hidden = false;
       } else {
+        preview.removeAttribute('src');
         preview.hidden = true;
       }
     });
