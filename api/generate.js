@@ -40,8 +40,11 @@ export default async function handler(req, res) {
 
     return res.status(response.status).json(data);
   } catch (error) {
+    console.error("Veo generation error:", error);
     return res.status(500).json({
-      error: "Video generation request failed"
+      error: error.message || "Video generation request failed"
     });
   }
 }
+
+    
